@@ -1,0 +1,85 @@
+<html>
+<head>
+    <link rel = "stylesheet" href = "/css/style.css"/>
+    <link rel = "stylesheet" href = "/css/bootstrap/bootstrap.min.css">
+    
+    <script src = "/js/jquery.min.js"></script>
+    <script src = "/js/main.js"></script>
+    <script src = "/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <title>🧻</title>
+    <meta charset="UTF-8">
+</head>
+<body class = "pt-5 pb-5">
+    <!-- Add member modal -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add member</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id = "form-add-user" class = "d-grid gap-3" method="POST" enctype="multipart/form-data">
+                <input type = "text" class = "form-control" placeholder = "Name" name = "name" required>
+                <div>
+                    <label for="user-image" class="form-label">Member Image</label>
+                    <input type = "file" id = "user-image" class = "form-control" placeholder = "Image" name = "image">
+                </div>
+                <button class="btn btn-dark w-100">Add</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header class = "d-flex mt-4 mb-4">
+        <h1 id = "logo" class = "ms-auto me-auto">🧻</h1>
+    </header>
+    <div class = "input-container d-grid gap-5">
+        <ul class="container nav">
+          <li class="nav-item">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+              Add member
+            </button>
+          </li>
+        </ul>
+        <div class = "container">
+            <div id = "stats" class = "d-flex row justify-content-center align-items-end">
+                
+            </div>
+        </div>
+        <div class = "container">
+            <h4>Add purchase</h5>
+            <div class = "row">
+                <form id = "form-add-purchase" class = "container d-grid gap-3">
+                    <div class = "row">
+                        <div class = "col">
+                            <input type = "text" class = "form-control" placeholder="Name" name = "item-name" required>
+                        </div>
+                        <div class = "col-auto">
+                                <input type = "number" class = "form-control" placeholder = "Price" min="0.00" max="10000.00" step="0.01" name="item-price" required>
+                        </div>
+                        <div class = "col-auto">
+                            <select name="item-member" id = "members" class="form-select" aria-label="Member" required>
+                              
+                            </select>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col">
+                            <button class = "btn btn-dark w-100">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class = "container">
+                <h4>Purchases</h5>
+                <ul id = "purchases" class = "list-group">
+                    
+                </ul>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

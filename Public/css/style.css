@@ -1,0 +1,14 @@
+#logo{
+    font-size: 128px;
+}
+
+.stats-img-wrap > img{
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.bar{
+    width: 56px;
+    background: red;
+}
