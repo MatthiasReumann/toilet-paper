@@ -75,7 +75,7 @@ function updateStats(data){
     data.individuals.forEach(individual => {
         const fraction = individual.amount / data.total;
         const inPixel = fraction * 100;
-        const member = AppData.users.find(user => user.name === individual.member);
+        const member = individual.member;
         statsContainer.append(`<div class = "col-auto position-relative">
                                 <div class = "d-flex justify-content-center mb-2">
                                     <span class="badge bg-secondary">${individual.amount/100}</span>
@@ -83,7 +83,7 @@ function updateStats(data){
                                 <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;"></div>
                                 <div>
                                 <div class = "stats-img-wrap bg-white p-1 shadow rounded-circle">
-                                  <img class = "rounded-circle "src = ${member.imageBase64}">
+                                  <img class = "rounded-circle" src = "/img/${member}.jpg">
                                 </div>
                                 </div>
                               </div>`)
