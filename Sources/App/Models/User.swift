@@ -22,15 +22,11 @@ final class User : Model, Content {
     @Field(key: "color")
     var color: String
     
-    @Field(key: "purchases")
-    var purchases: [Item]
-    
     init() { }
     
-    init(id: UUID? = nil, name: String, color: String, purchases: [Item]){
+    init(id: UUID? = nil, name: String, color: String){
         self.id = id;
         self.name = name
         self.color = color
-        self.purchases = purchases
     }
 }

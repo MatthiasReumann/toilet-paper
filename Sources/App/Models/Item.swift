@@ -6,14 +6,31 @@
 //
 
 import Foundation
+import FluentMongoDriver
+import Fluent
 import Vapor
 
-final class Item : Codable{
+final class Item : Model, Content{
+    static let schema = "items"
+    
+    @ID(key: .id)
+    var id: UUID?
+    
+    @Field(key: "name")
     var name: String
+    
+    @Field(key: "priceInCent")
     var priceInCent: Int
     
-    init(name: String, priceInCent: Int){
+    @Parent(key: "userid")
+    var user: User
+
+    init(){}
+    
+    init(id: UUID? = nil, name: String, priceInCent: Int, userid: UUID){
+        self.id = id
         self.name = name
         self.priceInCent = priceInCent
+        self.$user.id = userid
     }
 }

@@ -2,19 +2,13 @@ import Foundation
 import Vapor
 import Fluent
 
-// List containing all users
-var userList: [User] = [];
+
 
 // Request of POST /users
 struct AddUser: Content{
     var name: String
     var color: String
     var image: Data
-}
-
-// Response of GET /users
-struct ListUsers: Content {
-    var users: [User]
 }
 
 func saveImage(filename: String, image: Data) throws {
@@ -33,11 +27,7 @@ func usersRoutes(_ app: Application) throws {
             
             try? saveImage(filename: user.name + ".jpg", image: user.image)
             
-            let newUser = User(
-                name: user.name.lowercased(),
-                color: user.color,
-                purchases: []
-            )
+            let newUser = User(name: user.name.lowercased(), color: user.color)
             
             return newUser.create(on: req.db)
                     .map { newUser }

@@ -1,5 +1,6 @@
 const AppData = {
-    users: []
+    users: [],
+    purchases: []
 }
 
 $(document).ready(() => {
@@ -12,9 +13,9 @@ $(document).ready(() => {
         e.preventDefault();
         addPurchase();
     });
+    
     listPurchases();
     listUsers();
-    getStats();
 });
 
 function addUser(){
@@ -36,100 +37,122 @@ function addUser(){
     });
 }
 
-function hideUserModal(){
-    var userModalElement = $('#addMemberModal')
+function hideModal(elementid){
+    var userModalElement = $(elementid)
     var modal = bootstrap.Modal.getInstance(userModalElement);
     modal.hide();
 }
 
+let hideUserModal = () => hideModal("#addMemberModal")
+let hidePurchaseModal = () => hideModal("#addPurchaseModal")
+
 function listUsers(){
-    $.get("/users", (data) => {
-        AppData.users = data.users;
-        updateUserList(data.users);
-        getStats();
+    $.get("/users", (users) => {
+        AppData.users = users;
+        updateUserList();
+        updateStats();
     }).fail(() => {
         console.error("GET /users failed.");
     })
 }
 
-function updateUserList(users){
+function updateUserList(){
     $("#members option").remove();
-    users.forEach((user) => {
-        console.log(user.color);
-        $("#members").append(`<option>${user.name}</option>`)
-    });
-}
-
-function getStats(){
-    $.get("/purchases/stats", (data) => {
-        updateStats(data);
-    }).fail(() => {
-        console.error("GET /purchases/stats failed.")
-    });
-}
-
-function updateStats(data){
-    $("#stats .col-auto").remove();
-    
-    const statsContainer = $("#stats");
-    console.log(data);
-    data.individuals.forEach(individual => {
-        const fraction = individual.amount / data.total;
-        const inPixel = fraction * 100;
-        const member = individual.member;
-        const color = AppData.users.find(user => user.name == member)?.color ?? 'black';
-        
-        statsContainer.append(`<div class = "col-auto position-relative">
-                                <div class = "d-flex justify-content-center mb-2">
-                                    <span class="badge bg-secondary">${individual.amount/100}</span>
-                                </div>
-                                <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;background:${color};"></div>
-                                <div>
-                                <div class = "stats-img-wrap bg-white p-1 shadow rounded-circle">
-                                  <img class = "rounded-circle" src = "/img/${member}.jpg">
-                                </div>
-                                </div>
-                              </div>`)
+    AppData.users.forEach((user) => {
+        $("#members").append(`<option value = "${user.id}">${user.name}</option>`)
     });
 }
 
 function addPurchase(){
     const name = $("input[name='item-name']").val();
     const priceInCent = $("input[name='item-price']").val() * 100;
-    const member = $("select[name='item-member']").val();
+    const userid = $("select[name='item-member']").val();
     
     const body = {
         name: name,
-        priceInCent: priceInCent
+        priceInCent: priceInCent,
+        user: {
+            id: userid
+        }
     };
     
-    $.post("/purchases/" + member, body, (response) => {
+    $.post("/purchases", body, (response) => {
+        hidePurchaseModal();
         listPurchases();
-        getStats();
     }).fail(()=>{
         console.error("POST /purchases failed.");
     })
 }
 
 function listPurchases(){
-    $.get("/purchases", (data) => {
-        updatePurchasesList(data.purchases);
+    $.get("/purchases", (purchases) => {
+        AppData.purchases = purchases;
+        updatePurchasesList();
+        updateStats();
     }).fail(() => {
         console.error("GET /purchases failed.");
     })
 }
 
-function updatePurchasesList(purchases){
+function updatePurchasesList(){
     $('#purchases li').remove();
     
-    purchases.forEach((purchase) => {
+    const limited = AppData.purchases.reverse().slice(0,5);
+    
+    limited.forEach((purchase) => {
         $('#purchases').append(`<li class = "list-group-item d-flex justify-content-between align-items-start">
                                     <div class="ms-2 me-auto">
                                         <div class="fw-bold">${purchase.name}</div>
                                         ${purchase.priceInCent/100}
                                     </div>
-                                    <span class="badge bg-primary rounded-pill">2</span>
+                                    <span class="badge bg-black rounded-pill">#2</span>
                                     </li>
                                `)
     })
+}
+
+function getStats(){
+    const stats = {
+        total: 0,
+        users: []
+    }
+    AppData.users.forEach((user) => {
+        let spent = 0;
+        AppData.purchases.forEach((purchase) => {
+            if(user.id === purchase.user.id){
+                spent += purchase.priceInCent;
+            }
+        })
+        stats.users.push({
+            name: user.name,
+            color: user.color,
+            spent: spent
+        });
+        stats.total += spent;
+    });
+    
+    return stats;
+}
+
+function updateStats(){
+    $("#stats .col-auto").remove();
+    
+    const stats = getStats();
+    
+    const statsContainer = $("#stats");
+    
+    stats.users.forEach((user) => {
+        const inPixel = (user.spent / stats.total) * 100;
+        
+        statsContainer.append(`<div class = "col-auto position-relative">
+                                    <div class = "d-flex justify-content-center mb-2">
+                                        <span class="badge bg-secondary">${user.spent/100}</span>
+                                    </div>
+                                    <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;background:${user.color};"></div>
+                                    <div>
+                                    <div class = "stats-img-wrap bg-white p-1 shadow rounded-circle">
+                                      <img class = "rounded-circle" src = "/img/${user.name}.jpg">
+                                    </div>
+                              </div>`)
+    });
 }
