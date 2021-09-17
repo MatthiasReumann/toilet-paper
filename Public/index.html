@@ -47,10 +47,13 @@
                     <div class = "col">
                         <input type = "text" class = "form-control" placeholder="Name" name = "item-name" required>
                     </div>
-                    <div class = "col-auto">
-                            <input type = "number" class = "form-control" placeholder = "Price" min="0.00" max="10000.00" step="0.01" name="item-price" required>
+                    <div class = "col-2">
+                            <input type = "number" class = "form-control" placeholder = "Price" min="0.00" max="10000.00" step="0.01" name="item-price" value="0.01" required>
                     </div>
-                    <div class = "col-auto">
+                        <div class = "col-2">
+                            <input type = "number" class = "form-control" placeholder = "Amount" min="0" max="16" step="1" name="item-amount" default="1" value="1" required>
+                    </div>
+                    <div class = "col">
                         <select name="item-member" id = "members" class="form-select" aria-label="Member" required>
                           
                         </select>

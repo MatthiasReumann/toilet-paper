@@ -2,6 +2,15 @@
     font-size: 32px;
 }
 
+#close{
+    transform: rotate(45deg);
+}
+
+#close:hover{
+    color: #e74c3c;
+    cursor: pointer;
+}
+
 .stats-img-wrap > img{
     width: 80px;
     height: 80px;

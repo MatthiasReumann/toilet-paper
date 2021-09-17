@@ -49,10 +49,11 @@ let hidePurchaseModal = () => hideModal("#addPurchaseModal")
 function listUsers(){
     $.get("/users", (users) => {
         AppData.users = users;
-        updateUserList();
-        updateStats();
     }).fail(() => {
         console.error("GET /users failed.");
+    }).then(() => {
+        updateUserList();
+        updateStats();
     })
 }
 
@@ -66,11 +67,13 @@ function updateUserList(){
 function addPurchase(){
     const name = $("input[name='item-name']").val();
     const priceInCent = $("input[name='item-price']").val() * 100;
+    const amount = $("input[name='item-amount']").val();
     const userid = $("select[name='item-member']").val();
     
     const body = {
         name: name,
         priceInCent: priceInCent,
+        amount: amount,
         user: {
             id: userid
         }
@@ -87,10 +90,11 @@ function addPurchase(){
 function listPurchases(){
     $.get("/purchases", (purchases) => {
         AppData.purchases = purchases;
-        updatePurchasesList();
-        updateStats();
     }).fail(() => {
         console.error("GET /purchases failed.");
+    }).then(() => {
+        updatePurchasesList();
+        updateStats();
     })
 }
 
@@ -100,15 +104,33 @@ function updatePurchasesList(){
     const limited = AppData.purchases.reverse().slice(0,5);
     
     limited.forEach((purchase) => {
-        $('#purchases').append(`<li class = "list-group-item d-flex justify-content-between align-items-start">
-                                    <div class="ms-2 me-auto">
+        $('#purchases').append(`<li class = "position-relative list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto mt-auto mb-auto">
                                         <div class="fw-bold">${purchase.name}</div>
                                         ${purchase.priceInCent/100}
                                     </div>
-                                    <span class="badge bg-black rounded-pill">#2</span>
+                                    <span class="badge bg-black rounded-pill mt-auto mb-auto me-3">#${purchase.amount}</span>
+                                    <span id = "close" class = "fs-1 pb-1 mt-auto mb-auto" onclick="deletePurchase('${purchase.id}')">+</span>
+                                    </div>
                                     </li>
                                `)
     })
+}
+
+function deletePurchase(id){
+    const purchase = AppData.purchases.find(p => p.id === id);
+    if (confirm(`Are you sure you want to delete '${purchase.name}'?`))  {
+        $.ajax({
+            url: "/purchases/" + id,
+            type: 'DELETE',
+            success: function(result) {
+                listPurchases();
+            },
+            error: function(err) {
+                console.log("DELETE /purchases/" + id + " failed.")
+            }
+        });
+    }
 }
 
 function getStats(){
@@ -118,16 +140,19 @@ function getStats(){
     }
     AppData.users.forEach((user) => {
         let spent = 0;
+        
         AppData.purchases.forEach((purchase) => {
             if(user.id === purchase.user.id){
-                spent += purchase.priceInCent;
+                spent += purchase.priceInCent * purchase.amount;
             }
-        })
+        });
+        
         stats.users.push({
             name: user.name,
             color: user.color,
             spent: spent
         });
+        
         stats.total += spent;
     });
     
@@ -143,7 +168,6 @@ function updateStats(){
     
     stats.users.forEach((user) => {
         const inPixel = (user.spent / stats.total) * 100;
-        
         statsContainer.append(`<div class = "col-auto position-relative">
                                     <div class = "d-flex justify-content-center mb-2">
                                         <span class="badge bg-secondary">${user.spent/100}</span>

@@ -22,15 +22,19 @@ final class Item : Model, Content{
     @Field(key: "priceInCent")
     var priceInCent: Int
     
+    @Field(key: "amount")
+    var amount: Int
+    
     @Parent(key: "userid")
     var user: User
 
     init(){}
     
-    init(id: UUID? = nil, name: String, priceInCent: Int, userid: UUID){
+    init(id: UUID? = nil, name: String, priceInCent: Int, amount: Int, userid: UUID){
         self.id = id
         self.name = name
         self.priceInCent = priceInCent
+        self.amount = amount;
         self.$user.id = userid
     }
 }

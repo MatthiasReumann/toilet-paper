@@ -20,5 +20,13 @@ func purchasesRoutes(_ app: Application) throws {
             let item = try req.content.decode(Item.self)
             return item.create(on: req.db).map{item}
         }
+        
+        purchases.delete(":id") {req -> String in
+            Item.find(req.parameters.get("id"), on: req.db).map{item in
+                item?.delete(on: req.db)
+            }
+            
+            return "deleted"
+        }
     }
 }
