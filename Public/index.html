@@ -20,7 +20,10 @@
           </div>
           <div class="modal-body">
             <form id = "form-add-user" class = "d-grid gap-3" method="POST" enctype="multipart/form-data">
-                <input type = "text" class = "form-control" placeholder = "Name" name = "name" required>
+                <div class = "d-flex">
+                    <input type = "text" class = "form-control" placeholder = "Name" name = "name" required>
+                    <input type="color" class="form-control form-control-color ms-3" id="color" value="#f3f" title="Choose your color" name = "color" required>
+                </div>
                 <div>
                     <label for="user-image" class="form-label">Member Image</label>
                     <input type = "file" id = "user-image" class = "form-control" placeholder = "Image" name = "image">

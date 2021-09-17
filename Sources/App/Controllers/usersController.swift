@@ -1,18 +1,20 @@
 import Foundation
 import Vapor
+import Fluent
 
 // List containing all users
 var userList: [User] = [];
 
-// User Model
-final class User : Codable {
+// Request of POST /users
+struct AddUser: Content{
     var name: String
-    var purchases: [Item]
-    
-    init(name: String, purchases: [Item]){
-        self.name = name
-        self.purchases = purchases
-    }
+    var color: String
+    var image: Data
+}
+
+// Response of GET /users
+struct ListUsers: Content {
+    var users: [User]
 }
 
 func saveImage(filename: String, image: Data) throws {
@@ -23,20 +25,22 @@ func saveImage(filename: String, image: Data) throws {
 func usersRoutes(_ app: Application) throws {
     app.group("users") { users in
         users.get { req in
-            return ListUsers(users: userList)
+            User.query(on: req.db).all()
         }
-
-        users.post { req -> String in
+        
+        users.post { req -> EventLoopFuture<User> in
             let user = try req.content.decode(AddUser.self)
             
             try? saveImage(filename: user.name + ".jpg", image: user.image)
             
             let newUser = User(
                 name: user.name.lowercased(),
+                color: user.color,
                 purchases: []
             )
-            userList.append(newUser)
-            return "created user with name \(user.name)"
+            
+            return newUser.create(on: req.db)
+                    .map { newUser }
         }
     }
 }

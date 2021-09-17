@@ -55,6 +55,7 @@ function listUsers(){
 function updateUserList(users){
     $("#members option").remove();
     users.forEach((user) => {
+        console.log(user.color);
         $("#members").append(`<option>${user.name}</option>`)
     });
 }
@@ -76,11 +77,13 @@ function updateStats(data){
         const fraction = individual.amount / data.total;
         const inPixel = fraction * 100;
         const member = individual.member;
+        const color = AppData.users.find(user => user.name == member)?.color ?? 'black';
+        
         statsContainer.append(`<div class = "col-auto position-relative">
                                 <div class = "d-flex justify-content-center mb-2">
                                     <span class="badge bg-secondary">${individual.amount/100}</span>
                                 </div>
-                                <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;"></div>
+                                <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;background:${color};"></div>
                                 <div>
                                 <div class = "stats-img-wrap bg-white p-1 shadow rounded-circle">
                                   <img class = "rounded-circle" src = "/img/${member}.jpg">

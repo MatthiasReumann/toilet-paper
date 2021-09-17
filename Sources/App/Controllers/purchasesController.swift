@@ -4,15 +4,27 @@ import Vapor
 // Dictionary mapping user-names to Item list
 var userPurchases: [String:[Item]] = [:]
 
-final class Item : Codable{
+// Request of POST /purchases/:name
+struct AddPurchase: Content {
     var name: String
     var priceInCent: Int
-    
-    init(name: String, priceInCent: Int){
-        self.name = name
-        self.priceInCent = priceInCent
-    }
 }
+
+// Response of GET /purchases
+struct ListPurchases: Content {
+    var purchases: [Item]
+}
+
+// Response of GET /purchases/stats
+struct PurchasesStatsIndividual: Content {
+    var member: String
+    var amount: Int = 0
+}
+struct PurchasesStats: Content {
+    var total: Int
+    var individuals: [PurchasesStatsIndividual]
+}
+
 
 
 func purchasesRoutes(_ app: Application) throws {
