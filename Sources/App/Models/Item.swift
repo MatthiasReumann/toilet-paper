@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import FluentMongoDriver
 import Fluent
 import Vapor
 
