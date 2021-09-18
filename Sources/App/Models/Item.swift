@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Matthias on 17.09.21.
-//
-
 import Foundation
 import Fluent
 import Vapor

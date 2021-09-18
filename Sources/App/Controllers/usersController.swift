@@ -2,9 +2,6 @@ import Foundation
 import Vapor
 import Fluent
 
-
-
-// Request of POST /users
 struct AddUser: Content{
     var name: String
     var color: String
@@ -18,7 +15,7 @@ func saveImage(filename: String, image: Data) throws {
 
 func usersRoutes(_ app: Application) throws {
     app.group("users") { users in
-        users.get { req in
+        users.get { req -> EventLoopFuture<[User]> in
             User.query(on: req.db).all()
         }
         
@@ -34,4 +31,5 @@ func usersRoutes(_ app: Application) throws {
         }
     }
 }
+
 

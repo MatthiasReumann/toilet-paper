@@ -4,6 +4,7 @@ import Vapor
 struct PurchaseQuery: Content{
     var limit: Int?
 }
+
 func purchasesRoutes(_ app: Application) throws {
     app.group("purchases") { purchases in
         
