@@ -1,4 +1,5 @@
 import Foundation
+import Fluent
 import Vapor
 
 struct PurchaseQuery: Content{
@@ -22,12 +23,12 @@ func purchasesRoutes(_ app: Application) throws {
             return item.create(on: req.db).map{item}
         }
         
-        purchases.delete(":id") {req -> String in
-            Item.find(req.parameters.get("id"), on: req.db).map{item in
+        purchases.delete(":id") {req -> Response in
+            Item.find(req.parameters.get("id"), on: req.db).map{ item in
                 item?.delete(on: req.db)
             }
             
-            return "deleted"
+            return Response(status: .ok, body: "")
         }
     }
 }

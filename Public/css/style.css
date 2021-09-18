@@ -11,6 +11,10 @@
     cursor: pointer;
 }
 
+#item-search-result{
+    height: 256px;
+}
+
 .stats-img-wrap > img{
     width: 80px;
     height: 80px;
@@ -20,4 +24,9 @@
 .bar{
     width: 56px;
     background: red;
+}
+
+.rounded-button{
+    height: 52px;
+    width: 52px;
 }

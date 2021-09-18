@@ -2,15 +2,17 @@
 <head>
     <link rel = "stylesheet" href = "/css/style.css"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     
     <script   src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="   crossorigin="anonymous"></script>
     <script src = "/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    
     <title>🧻</title>
     <meta charset="UTF-8">
 </head>
 <body class = "pb-3">
-    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModal" aria-hidden="true">
+    <div class="modal fade" id="add-member-modal" tabindex="-1" aria-labelledby="add-member-modal" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -34,7 +36,7 @@
       </div>
     </div>
     
-    <div class="modal fade" id="addPurchaseModal" tabindex="-1" aria-labelledby="addPurchaseModal" aria-hidden="true">
+    <div class="modal fade" id="add-purchase-modal" tabindex="-1" aria-labelledby="add-purchase-modal" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -45,7 +47,12 @@
             <form id = "form-add-purchase" class = "container d-grid gap-3">
                 <div class = "row">
                     <div class = "col">
+                        <div class = "position-relative">
                         <input type = "text" class = "form-control" placeholder="Name" name = "item-name" required>
+                        <ul id = "item-search-result" class="position-absolute w-100 overflow-scroll list-group">
+                            
+                        </ul>
+                        </div>
                     </div>
                     <div class = "col-2">
                             <input type = "number" class = "form-control" placeholder = "Price" min="0.00" max="10000.00" step="0.01" name="item-price" value="0.01" required>
@@ -74,13 +81,13 @@
             <h1 id = "logo" class = "position-absolute start-0">🧻</h1>
             <ul class="container nav justify-content-end">
               <li class="nav-item">
-                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                  Add Member
+                <button type="button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#add-member-modal">
+                  <i class="bi bi-person-plus-fill"></i>
                 </button>
               </li>
               <li class="nav-item ms-3">
-                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#addPurchaseModal">
-                  Add Purchase
+                <button type="button" id = "add-purchase-button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#add-purchase-modal">
+                  <i class="bi bi-cart-plus-fill"></i>
                 </button>
               </li>
             </ul>
@@ -93,7 +100,7 @@
             </div>
             
             <div class = "container">
-                <h4>Last 5 Purchases</h5>
+                <h4 id = "purchases-header"></h5>
                 <ul id = "purchases" class = "list-group">
                     
                 </ul>

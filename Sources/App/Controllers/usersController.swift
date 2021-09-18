@@ -29,6 +29,14 @@ func usersRoutes(_ app: Application) throws {
             return newUser.create(on: req.db)
                     .map { newUser }
         }
+        
+        users.delete(":id") { req -> Response in
+            User.find(req.parameters.get("id"), on: req.db).map{user in
+                user?.delete(on: req.db)
+            }
+            
+            return Response(status: .ok, body: "")
+        }
     }
 }
 
