@@ -2,8 +2,8 @@ import Foundation
 import Fluent
 import Vapor
 
-final class Item : Model, Content{
-    static let schema = "items"
+final class Purchase: Model, Content {
+    static let schema = "purchases"
     
     @ID(key: .id)
     var id: UUID?
@@ -19,14 +19,14 @@ final class Item : Model, Content{
     
     @Parent(key: "userid")
     var user: User
-
+    
     init(){}
     
-    init(id: UUID? = nil, name: String, priceInCent: Int, amount: Int, userid: UUID){
+    init(id: UUID? = nil, name: String, priceIntCent: Int, amount: Int, userid: UUID){
         self.id = id
         self.name = name
         self.priceInCent = priceInCent
-        self.amount = amount;
+        self.amount = amount
         self.$user.id = userid
     }
 }

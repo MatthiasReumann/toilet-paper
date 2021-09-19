@@ -14,6 +14,9 @@ final class User : Model, Content {
     @Field(key: "color")
     var color: String
     
+    @Children(for: \.$user)
+    var purchases: [Purchase]
+    
     init() { }
     
     init(id: UUID? = nil, name: String, color: String){

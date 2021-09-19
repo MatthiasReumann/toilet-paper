@@ -8,12 +8,13 @@ struct SearchQuery: Content{
 
 func searchRoutes(_ app: Application) throws {
     app.group("search") { searches in
-        searches.get { req -> EventLoopFuture<[Item]> in
+        searches.get { req -> EventLoopFuture<[Purchase]> in
             let searchQuery = try req.query.decode(SearchQuery.self)
-            return Item.query(on:req.db).group(.and) { group in
-                group.filter(\.$name ~~ searchQuery.q)
-                .filter(\.$name =~ searchQuery.q)
-                .filter(\.$name ~= searchQuery.q)
+            return Purchase.query(on:req.db).group(.and) { group in
+                group
+                    .filter(\.$name ~~ searchQuery.q)
+                    .filter(\.$name =~ searchQuery.q)
+                    .filter(\.$name ~= searchQuery.q)
             }.all()
         }
     
