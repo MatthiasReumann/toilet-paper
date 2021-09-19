@@ -38,6 +38,35 @@ function listUsers(){
     })
 }
 
+function updateUser(user, i){
+    const form = $(`#form-edit-user-${i}`)[0];
+    const formData = new FormData(form);
+    const formElements = $(`#form-edit-user-${i} :input`);
+    const btn = $("#edit-user-button");
+    
+    formElements.prop("disabled", true);
+    
+    btn.html(`<div class="spinner-border spinner-border-sm mt-1 mb-1 text-light" role="status">
+                <span class="visually-hidden">Updating...</span>
+             </div>`)
+    
+    $.ajax({
+        url: "/users/"+user.id,
+        type: "PUT",
+        data: formData,
+        enctype: 'multipart/form-data',
+        processData: false,
+        contentType: false,
+        cache: false,
+        success: (res) => {
+            hideUserListModal();
+            listUsers();
+            formElements.prop("disabled", false);
+            btn.html("Update")
+        }
+    });
+}
+
 function deleteUser(user){
     if(confirm(`Do you really want to delete user '${user.name}'?`)){
         $.ajax({
@@ -57,6 +86,7 @@ function addUsersToSelect(){
     
     const purchaseButton = $("#add-purchase-modal-button");
     const showUsersButton = $("#show-users-list-button");
+    
     if(AppData.users.length === 0){
         purchaseButton.prop("disabled",true);
         showUsersButton.prop("disabled", true);
@@ -104,6 +134,12 @@ function renderUserList(){
         
         ul.find(".del").get(i).onclick = () => deleteUser(user);
         ul.find(".edit").get(i).onclick = () => onUserEditClick(user, i);
+        
+        $(`#form-edit-user-${i}`).submit((e) => {
+            e.preventDefault();
+            updateUser(user, i);
+            event.target.reset()
+        })
     });
 }
 

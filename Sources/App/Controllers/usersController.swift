@@ -2,10 +2,10 @@ import Foundation
 import Vapor
 import Fluent
 
-struct AddUser: Content{
+struct UserRequest: Content{
     var name: String
     var color: String
-    var image: Data
+    var image: Data?
 }
 
 func saveImage(filename: String, image: Data) throws {
@@ -25,14 +25,41 @@ func usersRoutes(_ app: Application) throws {
         }
         
         users.post { req -> EventLoopFuture<User> in
-            let user = try req.content.decode(AddUser.self)
+            let request = try req.content.decode(UserRequest.self)
             
-            let newUser = User(name: user.name.lowercased(), color: user.color)
+            let user = User(name: request.name.lowercased(), color: request.color)
         
-            return newUser.create(on: req.db).flatMapThrowing{ newUser
-                try saveImage(filename: newUser.id!.uuidString, image: user.image)
-                return newUser
+            return user.create(on: req.db).flatMapThrowing{ _ in
+                if let image = request.image {
+                    if !image.isEmpty{
+                        try saveImage(filename: user.id!.uuidString, image: image)
+                    }
+                }
+                return user
             }
+        }
+        
+        users.put(":id") {req -> Response in
+            let request = try req.content.decode(UserRequest.self)
+            if let userid = UUID(req.parameters.get("id")!){
+                _ = User.query(on: req.db)
+                    .set(\.$name, to: request.name)
+                    .set(\.$color, to: request.color)
+                    .filter(\.$id == userid)
+                    .update()
+                    .flatMapThrowing{
+                        if let image = request.image {
+                            if !image.isEmpty {
+                                try saveImage(filename: userid.uuidString, image: image)
+                            }
+                        }
+                    }
+                
+                return Response(status: .ok, body: "")
+            }else{
+                throw Abort(.badRequest)
+            }
+                    
         }
         
         users.delete(":id") { req -> EventLoopFuture<User> in
