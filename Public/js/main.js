@@ -29,6 +29,8 @@ $(document).ready(() => {
             search(input);
         }, 1000);
     });
+
+    $("#add-purchase-modal").on("show.bs.modal", clearSearchResults);
     
     listPurchases();
     listUsers();
@@ -77,6 +79,16 @@ function selectItem(item){
 function addUser(){
     const form = $("#form-add-user")[0];
     const formData = new FormData(form);
+    const formElements = $("#form-add-user :input");
+    const btn = $("#add-user-button");
+    
+    formElements.prop("disabled", true);
+    
+    btn.html(`<div class="spinner-border spinner-border-sm mt-1 mb-1 text-light" role="status">
+                <span class="visually-hidden">Adding...</span>
+             </div>`)
+    
+    
     
     $.ajax({
         url: "/users",
@@ -89,6 +101,8 @@ function addUser(){
         success: (res) => {
             hideUserModal();
             listUsers();
+            formElements.prop("disabled", false);
+            btn.html("Add")
         }
     });
 }
@@ -122,6 +136,9 @@ function updateUserList(){
 }
 
 function addPurchase(){
+    const formElements = $("#form-add-purchase :input");
+    formElements.prop("disabled", true);
+    
     const body = {
         name: $("input[name='item-name']").val(),
         priceInCent: $("input[name='item-price']").val() * 100,
@@ -134,7 +151,9 @@ function addPurchase(){
     $.post("/purchases", body, (response) => {
         hidePurchaseModal();
         listPurchases();
-    }).fail(() => console.error("POST /purchases failed."));
+    })
+    .fail(() => console.error("POST /purchases failed."))
+    .then(() => formElements.prop("disabled", false))
 }
 
 function listPurchases(){
@@ -184,9 +203,7 @@ function deletePurchase(purchase, i){
             success: function(result) {
                 listPurchases();
             },
-            error: function(err) {
-                console.log("DELETE /purchases/" + id + " failed.")
-            }
+            error: (err) => console.log("DELETE /purchases/" + id + " failed.")
         }).then(() => {});
     }
 }
@@ -206,6 +223,7 @@ function getStats(){
         });
         
         stats.users.push({
+            id: user.id,
             name: user.name,
             color: user.color,
             spent: spent
@@ -226,14 +244,14 @@ function updateStats(){
     
     stats.users.forEach((user) => {
         const inPixel = (user.spent / stats.total) * 100;
-        statsContainer.append(`<div class = "col-auto position-relative">
+        statsContainer.append(`<div class = "col-auto position-relative mt-3 mb-3">
                                     <div class = "d-flex justify-content-center mb-2">
                                         <span class="badge bg-secondary">${user.spent/100}</span>
                                     </div>
                                     <div class = "bar ms-auto me-auto mb-3" style="height: ${inPixel}px;background:${user.color};"></div>
                                     <div>
                                     <div class = "stats-img-wrap bg-white p-1 shadow rounded-circle">
-                                      <img class = "rounded-circle" src = "/img/${user.name}.jpg">
+                                      <img class = "rounded-circle" src = "/img/${user.id}.jpg">
                                     </div>
                               </div>`)
     });

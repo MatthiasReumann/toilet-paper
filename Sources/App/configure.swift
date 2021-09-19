@@ -4,6 +4,7 @@ import FluentMongoDriver
 
 extension Application {
     static let databaseUrl = Environment.get("MONGODB_URL")!
+    static let imgUrl = "Public/img/"
 }
 
 // configures your application

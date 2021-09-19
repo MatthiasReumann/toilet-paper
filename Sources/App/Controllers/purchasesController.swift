@@ -23,12 +23,19 @@ func purchasesRoutes(_ app: Application) throws {
             return item.create(on: req.db).map{item}
         }
         
-        purchases.delete(":id") {req -> Response in
-            Item.find(req.parameters.get("id"), on: req.db).map{ item in
-                item?.delete(on: req.db)
+        purchases.delete(":id") {req -> EventLoopFuture<Item> in
+            if let purchaseid = UUID(req.parameters.get("id")!) {
+                return Item.query(on: req.db)
+                    .filter(\.$id == purchaseid)
+                    .first()
+                    .unwrap(or: Abort(.notFound, reason: "Purchase doesn't exist."))
+                    .map{ purchase in
+                        purchase.delete(on: req.db)
+                        return purchase
+                    }
+            }else{
+                throw Abort(.badRequest)
             }
-            
-            return Response(status: .ok, body: "")
         }
     }
 }
