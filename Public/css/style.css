@@ -2,17 +2,24 @@
     font-size: 32px;
 }
 
-#close{
-    transform: rotate(45deg);
+#item-search-result{
+    height: 256px;
 }
 
-#close:hover{
+.del:hover{
     color: #e74c3c;
     cursor: pointer;
 }
 
-#item-search-result{
-    height: 256px;
+.edit{
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+.edit:hover{
+    color: #2980b9;
+    cursor: pointer;
 }
 
 .stats-img-wrap > img{

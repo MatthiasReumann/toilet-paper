@@ -16,7 +16,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add member</h5>
+            <h5 class="modal-title">Add member</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -76,18 +76,39 @@
         </div>
       </div>
     </div>
+    
+    <div class="modal fade" id="show-users-modal" tabindex="-1" aria-labelledby="show-users-modal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Members</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul id = "users-list" class="list-group">
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class = "col-md-6 ms-auto me-auto">
         <header class = "position-relative d-flex pt-2 pb-2">
             <h1 id = "logo" class = "position-absolute start-0">🧻</h1>
             <ul class="container nav justify-content-end">
               <li class="nav-item">
                 <button type="button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#add-member-modal">
-                  <i class="bi bi-person-plus-fill"></i>
+                    <i class="bi bi-person-plus-fill"></i>
                 </button>
               </li>
               <li class="nav-item ms-3">
-                <button type="button" id = "add-purchase-button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#add-purchase-modal">
-                  <i class="bi bi-cart-plus-fill"></i>
+                <button type="button" id = "add-purchase-modal-button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#add-purchase-modal">
+                    <i class="bi bi-cart-plus-fill"></i>
+                </button>
+              </li>
+              <li class="nav-item ms-3 border-start ps-3">
+                <button type="button" id = "show-users-list-button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#show-users-modal">
+                    <i class="bi bi-person-lines-fill"></i>
                 </button>
               </li>
             </ul>
