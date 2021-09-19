@@ -69,7 +69,7 @@ func usersRoutes(_ app: Application) throws {
                     .first()
                     .unwrap(or: Abort(.notFound, reason: "User doesn't exist."))
                     .map{ user in
-                        user.delete(on: req.db).flatMapThrowing {
+                        _ = user.delete(on: req.db).flatMapThrowing {
                             try deleteImage(filename: user.id!.uuidString)
                         }
                         return user

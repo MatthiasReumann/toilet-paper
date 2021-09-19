@@ -31,7 +31,7 @@ func purchasesRoutes(_ app: Application) throws {
             return User.find(purchase.$user.id, on: req.db)
                 .unwrap(or: Abort(.notFound, reason: "User not found"))
                 .map{ user in
-                    user.$purchases.create(purchase, on: req.db)
+                    _ = user.$purchases.create(purchase, on: req.db)
                     return purchase
                 }
         }
@@ -43,7 +43,7 @@ func purchasesRoutes(_ app: Application) throws {
                     .first()
                     .unwrap(or: Abort(.notFound, reason: "Purchase doesnt exist"))
                     .map{ purchase in
-                        purchase.delete(on: req.db)
+                        _ = purchase.delete(on: req.db)
                         return purchase
                     }
             }else{
