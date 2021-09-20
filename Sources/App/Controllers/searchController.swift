@@ -6,7 +6,7 @@ struct SearchQuery: Content{
     var q: String
 }
 
-func searchRoutes(_ app: Application) throws {
+/*func searchRoutes(_ app: Application) throws {
     app.group("search") { searches in
         searches.get { req -> EventLoopFuture<[Purchase]> in
             let searchQuery = try req.query.decode(SearchQuery.self)
@@ -19,4 +19,4 @@ func searchRoutes(_ app: Application) throws {
         }
     
     }
-}
+}*/

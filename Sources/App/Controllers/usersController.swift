@@ -2,43 +2,35 @@ import Foundation
 import Vapor
 import Fluent
 
-struct UserRequest: Content{
-    var name: String
-    var color: String
-    var image: Data?
-}
-
-func saveImage(filename: String, image: Data) throws {
-    let url = URL(fileURLWithPath: Application.imgUrl + filename + ".jpg").absoluteURL
-    try image.write(to: url)
-}
-
-func deleteImage(filename: String) throws {
-    let url = URL(fileURLWithPath: Application.imgUrl + filename + ".jpg").absoluteURL
-    try FileManager.default.removeItem(at: url)
-}
-
 func usersRoutes(_ app: Application) throws {
     app.group("users") { users in
         users.get { req -> EventLoopFuture<[User]> in
             User.query(on: req.db).all()
         }
         
-        users.post { req -> EventLoopFuture<User> in
+        users.post { req -> EventLoopFuture<Response> in
             let request = try req.content.decode(UserRequest.self)
             
-            let user = User(name: request.name.lowercased(), color: request.color)
-        
+            let user = request.toUser()
+            
             return user.create(on: req.db).flatMapThrowing{ _ in
                 if let image = request.image {
                     if !image.isEmpty{
                         try saveImage(filename: user.id!.uuidString, image: image)
                     }
                 }
-                return user
+                
+                let response = Response(status: .created)
+                response.headers.add(name: .location, value: "/users/\(user.id!.uuidString)")
+                
+                return response
             }
         }
-        
+    }
+}
+
+func usersIdRoutes(_ app: Application) throws {
+    app.group("users") { users in
         users.put(":id") {req -> Response in
             let request = try req.content.decode(UserRequest.self)
             if let userid = UUID(req.parameters.get("id")!){
@@ -55,11 +47,11 @@ func usersRoutes(_ app: Application) throws {
                         }
                     }
                 
-                return Response(status: .ok, body: "")
+                return Response(status: .ok)
             }else{
                 throw Abort(.badRequest)
             }
-                    
+            
         }
         
         users.delete(":id") { req -> EventLoopFuture<User> in
@@ -79,6 +71,53 @@ func usersRoutes(_ app: Application) throws {
             }
         }
     }
+}
+
+func usersIdPurchasesRoutes(_ app:Application) throws {
+    app.group("users") { users in
+        users.get(":id", "purchases") { req -> EventLoopFuture<[Purchase]> in
+            if let userid = UUID(req.parameters.get("id")!){
+                return User.query(on: req.db)
+                    .filter(\.$id == userid)
+                    .field(\.$purchases).first().map{ user -> [Purchase] in
+                        return user!.purchases
+                    }
+            }else{
+                throw Abort(.badRequest)
+            }
+        }
+        
+        users.post(":id", "purchases") { req -> Response in
+            let purchase = try req.content.decode(PurchaseRequest.self).toPurchase()
+            if let userid = UUID(req.parameters.get("id")!){
+                _ = User.query(on: req.db)
+                    .filter(\.$id == userid)
+                    .first()
+                    .unwrap(or: Abort(.notFound, reason: "User not found"))
+                    .map { user in
+                        user.purchases.append(purchase)
+                        _ = user.update(on: req.db)
+                    }
+                
+                let response = Response(status: .created)
+                response.headers.add(name: .location, value: "/purchases/\(purchase.id!.uuidString)")
+                
+                return response
+            }else{
+                throw Abort(.badRequest)
+            }
+        }
+    }
+}
+
+func saveImage(filename: String, image: Data) throws {
+    let url = URL(fileURLWithPath: Application.imgUrl + filename + ".jpg").absoluteURL
+    try image.write(to: url)
+}
+
+func deleteImage(filename: String) throws {
+    let url = URL(fileURLWithPath: Application.imgUrl + filename + ".jpg").absoluteURL
+    try FileManager.default.removeItem(at: url)
 }
 
 

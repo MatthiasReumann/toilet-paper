@@ -1,52 +1,37 @@
 import Foundation
-import Fluent
 import Vapor
-
-struct PurchaseQuery: Content{
-    var limit: Int?
-}
-
-struct PurchaseGetResponse: Content {
-    var id: UUID
-    var amount: Int
-    var userid: UUID
-    var name: String
-    var priceIntCent: Int
-}
+import Fluent
 
 func purchasesRoutes(_ app: Application) throws {
     app.group("purchases") { purchases in
-        
         purchases.get { req -> EventLoopFuture<[Purchase]> in
-            let query = try req.query.decode(PurchaseQuery.self)
-            if let limit = query.limit {
-                return Purchase.query(on: req.db).limit(limit).all()
-            }else{
-                return Purchase.query(on: req.db).all()
+            return User.query(on: req.db).field(\.$purchases).all().map { users -> [Purchase] in
+                var purchases: [Purchase] = []
+                for u in users {
+                    purchases.append(contentsOf: u.purchases)
+                }
+                return purchases
             }
         }
-        
-        purchases.post { req -> EventLoopFuture<Purchase> in
-            let purchase = try req.content.decode(Purchase.self)
-            return User.find(purchase.$user.id, on: req.db)
-                .unwrap(or: Abort(.notFound, reason: "User not found"))
-                .map{ user in
-                    _ = user.$purchases.create(purchase, on: req.db)
-                    return purchase
-                }
-        }
-        
-        purchases.delete(":id") {req -> EventLoopFuture<Purchase> in
+    }
+}
+
+func purchasesByIdRoutes(_ app: Application) throws {
+    app.group("purchases") { purchases in
+        purchases.delete(":id") { req -> EventLoopFuture<Response> in
             if let purchaseid = UUID(req.parameters.get("id")!) {
-                return Purchase.query(on: req.db)
-                    .filter(\.$id == purchaseid)
-                    .first()
-                    .unwrap(or: Abort(.notFound, reason: "Purchase doesnt exist"))
-                    .map{ purchase in
-                        _ = purchase.delete(on: req.db)
-                        return purchase
+                return User.query(on: req.db).field(\.$purchases).all().flatMapThrowing { users -> Response in
+                    for u in users {
+                        if let index = u.purchases.firstIndex(where: { $0.id == purchaseid }) {
+                            u.purchases.remove(at: index)
+                            _ = u.update(on: req.db)
+                            return Response(status: .ok)
+                        }
                     }
-            }else{
+                    
+                    throw Abort(.notFound)
+                }
+            } else {
                 throw Abort(.badRequest)
             }
         }

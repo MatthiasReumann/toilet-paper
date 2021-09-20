@@ -14,7 +14,7 @@ final class User : Model, Content {
     @Field(key: "color")
     var color: String
     
-    @Children(for: \.$user)
+    @Field(key: "purchases")
     var purchases: [Purchase]
     
     init() { }
@@ -23,5 +23,6 @@ final class User : Model, Content {
         self.id = id;
         self.name = name
         self.color = color
+        self.purchases = []
     }
 }
