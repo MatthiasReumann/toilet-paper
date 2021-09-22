@@ -1,3 +1,6 @@
+const hidePurchaseModal = () => hideModal("#add-purchase-modal");
+
+// POST /users
 function addUser(){
     const form = $("#form-add-user")[0];
     const formData = new FormData(form);
@@ -28,17 +31,17 @@ function addUser(){
     });
 }
 
+// GET /users
 function listUsers(){
     $.get("/users", (users) => {
         UserList.setUsers(users);
         Current.render();
     }).fail(() => {
         console.error("GET /users failed.");
-    }).then(() => {
-        updateStats();
-    })
+    });
 }
 
+// PUT /users/:id
 function updateUser(user, i){
     const form = $(`#form-edit-user-${i}`)[0];
     const formData = new FormData(form);
@@ -68,6 +71,7 @@ function updateUser(user, i){
     });
 }
 
+// DELETE /users/:id
 function deleteUser(user){
     if(confirm(`Do you really want to delete user '${user.name}'?`)){
         $.ajax({
@@ -84,14 +88,37 @@ function deleteUser(user){
     }
 }
 
-function onUserEditClick(user, i){
-    // set button fill
-    const btn = $(`#btn-edit-${i}`);
-    btn.html().trim() === '<i class="bi bi-pen"></i>' ?
-        btn.html('<i class="bi bi-pen-fill"></i>') :
-        btn.html('<i class="bi bi-pen"></i>');
+// POST /users/:id/purchases
+function addPurchase(){
+    const formElements = $("#form-add-purchase :input");
+    formElements.prop("disabled", true);
     
-    // set values
-    $(`#form-edit-user-${i} input[name='name']`).val(user.name);
-    $(`#form-edit-user-${i} input[name='color']`).val(user.color);
+    const body = {
+        name: $("input[name='item-name']").val(),
+        priceInCent: $("input[name='item-price']").val() * 100,
+        amount: $("input[name='item-amount']").val()
+    };
+    
+    const uid = $("input[name='item-member']").val();
+    $.post(`/users/${uid}/purchases`, body, function(data){
+        listUsers();
+        hidePurchaseModal();
+    })
+    .fail(() => console.error("POST /purchases failed."))
+    .then(() => formElements.prop("disabled", false));
 }
+
+// DELETE /users/:id/purchases/:pid
+function deletePurchase(purchase){
+    if (confirm(`Are you sure you want to delete '${purchase.name}'?`))  {
+        $.ajax({
+            url: `/users/${purchase.uid}/purchases/${purchase.id}`,
+            type: 'DELETE',
+            complete: function(result) {
+                listUsers();
+            },
+            error: (err) => console.log(`DELETE /users/${purchase.uid}/purchases/${purchase.id} failed`)
+        });
+    }
+}
+

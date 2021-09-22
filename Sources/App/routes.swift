@@ -1,10 +1,10 @@
 import Vapor
 
 func routes(_ app: Application) throws {
-    try usersRoutes(app)
-    try usersIdRoutes(app)
-    try usersIdPurchasesRoutes(app)
-    try purchasesRoutes(app)
-    try purchasesByIdRoutes(app)
-    try searchRoutes(app)
+    try app.group("users") { users in
+        try usersRoutes(users)
+        try usersIdRoutes(users)
+        try usersIdPurchasesRoutes(users)
+        try usersIdPurchasesIdRoutes(users)
+    }
 }

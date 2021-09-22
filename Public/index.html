@@ -7,11 +7,7 @@
     <script   src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="   crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     
-    <script src = "/js/stats.js"></script>
-    <script src = "/js/search.js"></script>
-    
-    <script src = "/js/purchase/purchase-api.js"></script>
-    <script src = "/js/purchase/PurchaseList.js"></script>
+    <script src = "/js/stats/Stats.js"></script>
     
     <script src = "/js/user/user-api.js"></script>
     <script src = "/js/user/UserList.js"></script>
@@ -58,12 +54,7 @@
                 <input type="hidden" name="item-member" id = "members" required></input>
                 <div class = "row">
                     <div class = "col">
-                        <div class = "position-relative">
                         <input name="item-name" id = "item-name" class="form-control" placeholder = "Name" required></input>
-                        <!--<ul id = "item-search-result" class="position-absolute w-100 overflow-scroll list-group">
-                            
-                        </ul>-->
-                        </div>
                     </div>
                     <div class = "col-2">
                         <input type = "number" class = "form-control" placeholder = "Amount" min="0" max="1000" step="0.01" name="item-price" default="1" value="0.01" required>

@@ -1,36 +1,17 @@
 $(document).ready(() => {
-    let timeout = null;
-    
-    $("#form-add-user").submit((e) => {
-        e.preventDefault();
-        addUser();
-        event.target.reset();
-    });
-    
-   $("#form-add-purchase").submit((e) => {
-        e.preventDefault();
-        addPurchase();
-        event.target.reset();
-    });
-    
-    $("input[name='item-name']").on("keyup", function(){
-        let input = $(this).val();
-
-        if(input === ""){
-            return;
-        }
-        clearTimeout(timeout);
-        timeout = setTimeout(function () {
-            search(input);
-        }, 1000);
-    });
-
-    $("#add-purchase-modal").on("show.bs.modal", clearSearchResults);
-    
+    onSubmit("#form-add-user", addUser);
+    onSubmit("#form-add-purchase", addPurchase);
     Current.init();
     UserList.init();
-    PurchaseList.init();
 });
+
+function onSubmit(formid, action) {
+    $(formid).submit((e) => {
+        e.preventDefault();
+        action();
+        event.target.reset();
+    });
+}
 
 function hideModal(elementid){
     var modalElement = $(elementid);

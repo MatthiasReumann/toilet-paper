@@ -1,7 +1,13 @@
 const UserList = {
     list: [],
+    purchases: [],
     
     render: function() {
+        this.renderUserList();
+        this.renderPurchases();
+    },
+    
+    renderUserList: function() {
         const ul = $("#users-list");
         const addPurchaseModalButton = $("#add-purchase-modal-button");
         const showUserListButton = $("#show-users-list-button");
@@ -65,12 +71,60 @@ const UserList = {
         });
     },
     
+    renderPurchases: function(purchases){
+        $('#purchases li').remove();
+        
+        const purchasesHeader = $("#purchases-header");
+        
+        if(this.purchases.length === 0){
+            purchasesHeader.html("No purchases yet.");
+            return;
+        }
+        
+        purchasesHeader.html("Last 5 Purchases");
+        
+        const limited = this.purchases.reverse().slice(0,5);
+        
+        limited.forEach((purchase, i) => {
+            const ul = $("#purchases").append(`<li class = "position-relative list-group-item d-flex justify-content-between align-items-start">
+                                                  <div class="ms-2 me-auto mt-auto mb-auto">
+                                                      <h6 class="m-0 fw-bold">${purchase.name}</h6>
+                                                      ${purchase.priceInCent/100}
+                                                  </div>
+                                                  <span class="badge bg-black rounded-pill mt-auto mb-auto me-3">#${purchase.amount}</span>
+                                                  <span class = "del fs-1 mt-auto mb-auto"><i class="bi bi-x"></i></span>
+                                              </li>`);
+            ul.find(".del").get(i).onclick = () => deletePurchase(purchase);
+        });
+    },
+    
     setUsers: function(users){
         this.list = users;
+        
+        this.purchases = [];
+        users.forEach((user) => {
+           user.purchases.forEach(p => p.uid = user.id);
+           this.purchases = this.purchases.concat(user.purchases);
+        });
+        
         this.render();
+        Stats.update();
     },
     
     init: function(){
         listUsers();
     }
 };
+
+function onUserEditClick(user, i){
+    // set button fill
+    const btn = $(`#btn-edit-${i}`);
+    btn.html().trim() === '<i class="bi bi-pen"></i>' ?
+        btn.html('<i class="bi bi-pen-fill"></i>') :
+        btn.html('<i class="bi bi-pen"></i>');
+    
+    // set values
+    $(`#form-edit-user-${i} input[name='name']`).val(user.name);
+    $(`#form-edit-user-${i} input[name='color']`).val(user.color);
+}
+
