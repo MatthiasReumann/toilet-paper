@@ -7,12 +7,6 @@ function addUser(){
     const formElements = $("#form-add-user :input");
     const btn = $("#add-user-button");
     
-    formElements.prop("disabled", true);
-    
-    btn.html(`<div class="spinner-border spinner-border-sm mt-1 mb-1 text-light" role="status">
-                <span class="visually-hidden">Adding...</span>
-             </div>`)
-    
     $.ajax({
         url: "/users",
         type: "POST",
@@ -21,10 +15,15 @@ function addUser(){
         processData: false,
         contentType: false,
         cache: false,
+        beforeSend : () => {
+            formElements.prop("disabled", true);
+            showSpinner(btn);
+        },
         success: (res) => {
             hideUserModal();
             listUsers();
-            
+        },
+        complete: () => {
             formElements.prop("disabled", false);
             btn.html("Add")
         }
@@ -36,9 +35,7 @@ function listUsers(){
     $.get("/users", (users) => {
         UserList.setUsers(users);
         Current.render();
-    }).fail(() => {
-        console.error("GET /users failed.");
-    });
+    }).fail(() => console.error("GET /users failed."));
 }
 
 // PUT /users/:id
@@ -48,12 +45,6 @@ function updateUser(user, i){
     const formElements = $(`#form-edit-user-${i} :input`);
     const btn = $("#edit-user-button");
     
-    formElements.prop("disabled", true);
-    
-    btn.html(`<div class="spinner-border spinner-border-sm mt-1 mb-1 text-light" role="status">
-                <span class="visually-hidden">Updating...</span>
-             </div>`)
-    
     $.ajax({
         url: `/users/${user.id}`,
         type: "PUT",
@@ -62,9 +53,15 @@ function updateUser(user, i){
         processData: false,
         contentType: false,
         cache: false,
+        beforeSend : () => {
+            formElements.prop("disabled", true);
+            showSpinner(btn);
+        },
         success: (res) => {
             hideUserListModal();
             listUsers();
+        },
+        complete: () => {
             formElements.prop("disabled", false);
             btn.html("Update")
         }
@@ -80,7 +77,6 @@ function deleteUser(user){
             success: (data) => {
                 hideUserListModal();
                 listUsers();
-                
                 Current.unsetCurrentMember(user);
             },
             error: (err) => console.err(`DELETE /users/${user.id} failed`)
@@ -120,5 +116,11 @@ function deletePurchase(purchase){
             error: (err) => console.log(`DELETE /users/${purchase.uid}/purchases/${purchase.id} failed`)
         });
     }
+}
+
+function showSpinner(el){
+    el.html(`<div class="spinner-border spinner-border-sm mt-1 mb-1 text-light" role="status">
+                <span class="visually-hidden">...</span>
+             </div>`);
 }
 
