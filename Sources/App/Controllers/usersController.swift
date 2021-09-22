@@ -28,79 +28,81 @@ func usersRoutes(_ users: Vapor.RoutesBuilder) throws {
 }
 
 func usersIdRoutes(_ users: Vapor.RoutesBuilder) throws {
-    users.put(":id") {req -> Response in
+    users.put(":id") {req -> EventLoopFuture<Response> in
         let request = try req.content.decode(UserRequest.self)
-        if let userid = UUID(req.parameters.get("id")!){
-            _ = User.query(on: req.db)
-                .set(\.$name, to: request.name)
-                .set(\.$color, to: request.color)
-                .filter(\.$id == userid)
-                .update()
-                .flatMapThrowing{
-                    if let image = request.image {
-                        if !image.isEmpty {
-                            try saveImage(filename: userid.uuidString, image: image)
-                        }
-                    }
-                }
-            
-            return Response(status: .ok)
-        }else{
+        
+        guard let uid = UUID(req.parameters.get("id")!) else {
             throw Abort(.badRequest)
         }
+        
+        return User.query(on: req.db)
+            .set(\.$name, to: request.name)
+            .set(\.$color, to: request.color)
+            .filter(\.$id == uid)
+            .update()
+            .flatMapThrowing{ _ -> Response in
+                if let image = request.image {
+                    if !image.isEmpty {
+                        try saveImage(filename: uid.uuidString, image: image)
+                    }
+                }
+                
+                return Response(status: .ok)
+            }
         
     }
     
     users.delete(":id") { req -> EventLoopFuture<User> in
-        if let userid = UUID(req.parameters.get("id")!) {
-            return User.query(on: req.db)
-                .filter(\.$id == userid)
-                .first()
-                .unwrap(or: Abort(.notFound, reason: "User doesn't exist."))
-                .map{ user in
-                    _ = user.delete(on: req.db).flatMapThrowing {
-                        try deleteImage(filename: user.id!.uuidString)
-                    }
-                    return user
-                }
-        }else{
+        
+        guard let uid = UUID(req.parameters.get("id")!) else {
             throw Abort(.badRequest)
         }
+        
+        return User.query(on: req.db)
+            .filter(\.$id == uid)
+            .first()
+            .unwrap(or: Abort(.notFound, reason: "User doesn't exist."))
+            .map{ user in
+                _ = user.delete(on: req.db).flatMapThrowing {
+                    try deleteImage(filename: uid.uuidString)
+                }
+                return user
+            }
     }
 }
 
 func usersIdPurchasesRoutes(_ users: Vapor.RoutesBuilder) throws {
     users.get(":id", "purchases") { req -> EventLoopFuture<[Purchase]> in
-        if let userid = UUID(req.parameters.get("id")!){
-            return User.query(on: req.db)
-                .filter(\.$id == userid)
-                .field(\.$purchases).first()
-                .unwrap(or: Abort(.notFound, reason: "User not found"))
-                .map{ $0.purchases }
-        }else{
+        guard let uid = UUID(req.parameters.get("id")!) else {
             throw Abort(.badRequest)
         }
+        
+        return User.query(on: req.db)
+            .filter(\.$id == uid)
+            .field(\.$purchases).first()
+            .unwrap(or: Abort(.notFound, reason: "User not found"))
+            .map{ $0.purchases }
     }
     
     users.post(":id", "purchases") { req -> EventLoopFuture<Response> in
         let purchase = try req.content.decode(PurchaseRequest.self).toPurchase()
-                
-        if let userid = UUID(req.parameters.get("id")!){
-            return User.query(on: req.db)
-                .filter(\.$id == userid)
-                .first()
-                .unwrap(or: Abort(.notFound, reason: "User not found"))
-                .map { user -> Response in
-                    user.purchases.append(purchase)
-                    _ = user.update(on: req.db)
-                    let response = Response(status: .created)
-                    response.headers.add(name: .location, value: purchase.id!.uuidString)
-                    
-                    return response
-                }
-        }else{
+        
+        guard let uid = UUID(req.parameters.get("id")!) else {
             throw Abort(.badRequest)
         }
+                
+        return User.query(on: req.db)
+            .filter(\.$id == uid)
+            .first()
+            .unwrap(or: Abort(.notFound, reason: "User not found"))
+            .map { user -> Response in
+                user.purchases.append(purchase)
+                _ = user.update(on: req.db)
+                let response = Response(status: .created)
+                response.headers.add(name: .location, value: purchase.id!.uuidString)
+                
+                return response
+            }
     }
 }
 
