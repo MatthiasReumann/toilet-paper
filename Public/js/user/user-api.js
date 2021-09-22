@@ -31,6 +31,7 @@ function addUser(){
 function listUsers(){
     $.get("/users", (users) => {
         UserList.setUsers(users);
+        Current.render();
     }).fail(() => {
         console.error("GET /users failed.");
     }).then(() => {
@@ -75,6 +76,8 @@ function deleteUser(user){
             success: (data) => {
                 hideUserListModal();
                 listUsers();
+                
+                Current.unsetCurrentMember(user);
             },
             error: (err) => console.err(`DELETE /users/${user.id} failed`)
         })

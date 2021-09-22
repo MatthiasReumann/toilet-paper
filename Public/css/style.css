@@ -41,7 +41,7 @@ img{
     width: 52px;
 }
 
-.profile-picture img {
+#profile-picture img {
     height: calc(52px - 0.25rem);
     width: calc(52px - 0.25rem);
 }

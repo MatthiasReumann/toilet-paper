@@ -3,10 +3,21 @@ const UserList = {
     
     render: function() {
         const ul = $("#users-list");
+        const addPurchaseModalButton = $("#add-purchase-modal-button");
+        const showUserListButton = $("#show-users-list-button");
+        const current_id = Current.getCurrentMember();
         
         $("#users-list li").remove();
         
-        const current_id = Current.getCurrentMember();
+        if(this.list.length === 0){
+            addPurchaseModalButton.prop("disabled", true);
+            showUserListButton.prop("disabled", true);
+            return;
+        }
+        
+        addPurchaseModalButton.prop("disabled", false);
+        showUserListButton.prop("disabled", false);
+        
         this.list.forEach((user, i) => {
            const show = current_id === user.id ? "" : "d-none";
             
@@ -18,7 +29,7 @@ const UserList = {
                             </div>
                             <div class = "d-flex mt-auto mb-auto">
                                 <button id = "btn-edit-${i}" class = "edit mt-auto mb-auto me-3 type="button" data-bs-toggle="collapse" data-bs-target="#edit-${i}" aria-expanded="false" aria-controls="edit-${i}">
-                                        <i class="bi bi-pen fs-5"></i>
+                                        <i class="bi bi-pen"></i>
                                 </button>
                                 <span class = "del mt-auto mb-auto fs-3"><i class="bi bi-x"></i></span>
                             </div>
