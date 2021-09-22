@@ -1,12 +1,13 @@
 import Foundation
+import Fluent
 import Vapor
 
 struct PurchaseRequest: Content{
     var name: String
-    var priceInCent: Int
     var amount: Int
+    var priceInCent: Int
     
-    func toPurchase() -> Purchase{
+    func toPurchase() -> Purchase {
         return Purchase(name: name, priceInCent: priceInCent, amount: amount)
     }
 }

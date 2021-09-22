@@ -79,30 +79,30 @@ func usersIdPurchasesRoutes(_ app:Application) throws {
             if let userid = UUID(req.parameters.get("id")!){
                 return User.query(on: req.db)
                     .filter(\.$id == userid)
-                    .field(\.$purchases).first().map{ user -> [Purchase] in
-                        return user!.purchases
-                    }
+                    .field(\.$purchases).first()
+                    .unwrap(or: Abort(.notFound, reason: "User not found"))
+                    .map{ $0.purchases }
             }else{
                 throw Abort(.badRequest)
             }
         }
         
-        users.post(":id", "purchases") { req -> Response in
+        users.post(":id", "purchases") { req -> EventLoopFuture<Response> in
             let purchase = try req.content.decode(PurchaseRequest.self).toPurchase()
+                    
             if let userid = UUID(req.parameters.get("id")!){
-                _ = User.query(on: req.db)
+                return User.query(on: req.db)
                     .filter(\.$id == userid)
                     .first()
                     .unwrap(or: Abort(.notFound, reason: "User not found"))
-                    .map { user in
+                    .map { user -> Response in
                         user.purchases.append(purchase)
                         _ = user.update(on: req.db)
+                        let response = Response(status: .created)
+                        response.headers.add(name: .location, value: purchase.id!.uuidString)
+                        
+                        return response
                     }
-                
-                let response = Response(status: .created)
-                response.headers.add(name: .location, value: "/purchases/\(purchase.id!.uuidString)")
-                
-                return response
             }else{
                 throw Abort(.badRequest)
             }

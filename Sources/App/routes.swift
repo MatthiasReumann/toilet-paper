@@ -6,5 +6,5 @@ func routes(_ app: Application) throws {
     try usersIdPurchasesRoutes(app)
     try purchasesRoutes(app)
     try purchasesByIdRoutes(app)
-    //try searchRoutes(app)
+    try searchRoutes(app)
 }

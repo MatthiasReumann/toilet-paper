@@ -3,13 +3,11 @@ function getStats(){
         total: 0,
         users: []
     }
-    AppData.users.forEach((user) => {
+    UserList.list.forEach((user) => {
         let spent = 0;
         
-        AppData.purchases.forEach((purchase) => {
-            if(user.id === purchase.user.id){
-                spent += purchase.priceInCent * purchase.amount;
-            }
+        user.purchases.forEach((purchase) => {
+            spent += purchase.priceInCent * purchase.amount;
         });
         
         stats.users.push({

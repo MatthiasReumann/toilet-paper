@@ -1,21 +1,16 @@
-const AppData = {
-    users: [],
-    purchases: []
-}
-
 $(document).ready(() => {
     let timeout = null;
     
     $("#form-add-user").submit((e) => {
         e.preventDefault();
         addUser();
-        event.target.reset()
+        event.target.reset();
     });
     
    $("#form-add-purchase").submit((e) => {
         e.preventDefault();
         addPurchase();
-        event.target.reset()
+        event.target.reset();
     });
     
     $("input[name='item-name']").on("keyup", function(){
@@ -32,10 +27,9 @@ $(document).ready(() => {
 
     $("#add-purchase-modal").on("show.bs.modal", clearSearchResults);
     
-    $("#show-users-modal").on("show.bs.modal", renderUserList);
-    
-    listPurchases();
-    listUsers();
+    Current.init();
+    UserList.init();
+    PurchaseList.init();
 });
 
 function hideModal(elementid){
@@ -51,5 +45,4 @@ function showModal(elementid){
 }
 
 let hideUserModal = () => hideModal("#add-member-modal");
-let hidePurchaseModal = () => hideModal("#add-purchase-modal");
 let hideUserListModal = () => hideModal("#show-users-modal");

@@ -2,6 +2,10 @@
     font-size: 42px;
 }
 
+img{
+    object-fit: cover;
+}
+
 #item-search-result{
     height: 256px;
 }
@@ -25,7 +29,6 @@
 .stats-img-wrap > img{
     width: 80px;
     height: 80px;
-    object-fit: cover;
 }
 
 .bar{
@@ -36,4 +39,9 @@
 .rounded-button{
     height: 52px;
     width: 52px;
+}
+
+.profile-picture img {
+    height: calc(52px - 0.25rem);
+    width: calc(52px - 0.25rem);
 }

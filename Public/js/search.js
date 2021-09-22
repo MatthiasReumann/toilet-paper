@@ -21,6 +21,7 @@ function showSearchResult(items){
 function selectItem(item){
     $("input[name='item-name']").val(item.name);
     $("input[name='item-price']").val(item.priceInCent/100);
+    $("input[name='item-id']").val(item.id);
     
     clearSearchResults();
 }

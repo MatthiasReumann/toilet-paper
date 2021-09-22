@@ -8,9 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     
     <script src = "/js/stats.js"></script>
-    <script src = "/js/user.js"></script>
-    <script src = "/js/purchase.js"></script>
     <script src = "/js/search.js"></script>
+    
+    <script src = "/js/purchase/purchase-api.js"></script>
+    <script src = "/js/purchase/PurchaseList.js"></script>
+    
+    <script src = "/js/user/user-api.js"></script>
+    <script src = "/js/user/UserList.js"></script>
+    
+    <script src = "/js/current/Current.js"></script>
     <script src = "/js/main.js"></script>
     <title>🧻</title>
     <meta charset="UTF-8">
@@ -49,25 +55,21 @@
           </div>
           <div class="modal-body">
             <form id = "form-add-purchase" class = "container d-grid gap-3">
+                <input type="hidden" name="item-member" id = "members" required></input>
                 <div class = "row">
                     <div class = "col">
                         <div class = "position-relative">
-                        <input type = "text" class = "form-control" placeholder="Name" name = "item-name" required>
-                        <ul id = "item-search-result" class="position-absolute w-100 overflow-scroll list-group">
+                        <input name="item-name" id = "item-name" class="form-control" placeholder = "Name" required></input>
+                        <!--<ul id = "item-search-result" class="position-absolute w-100 overflow-scroll list-group">
                             
-                        </ul>
+                        </ul>-->
                         </div>
                     </div>
                     <div class = "col-2">
-                            <input type = "number" class = "form-control" placeholder = "Price" min="0.00" max="10000.00" step="0.01" name="item-price" value="0.01" required>
+                        <input type = "number" class = "form-control" placeholder = "Amount" min="0" max="1000" step="0.01" name="item-price" default="1" value="0.01" required>
                     </div>
-                        <div class = "col-2">
-                            <input type = "number" class = "form-control" placeholder = "Amount" min="0" max="16" step="1" name="item-amount" default="1" value="1" required>
-                    </div>
-                    <div class = "col">
-                        <select name="item-member" id = "members" class="form-select" aria-label="Member" required>
-                          
-                        </select>
+                    <div class = "col-2">
+                        <input type = "number" class = "form-control" placeholder = "Amount" min="0" max="16" step="1" name="item-amount" default="1" value="1" required>
                     </div>
                 </div>
                 <div class = "row">
@@ -114,6 +116,11 @@
                 <button type="button" id = "show-users-list-button" class="rounded-button btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#show-users-modal">
                     <i class="bi bi-person-lines-fill"></i>
                 </button>
+              </li>
+              <li class="nav-item ms-3">
+                  <div class = "profile-picture bg-white shadow-sm p-1 rounded-circle">
+                      <img id = "current-member-picture" class = "rounded-circle">
+                    </div>
               </li>
             </ul>
         </header>
